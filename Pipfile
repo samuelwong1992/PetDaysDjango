@@ -14,3 +14,6 @@ django-allauth = "==0.44.0"
 python_version = "3.9"
 
 [scripts]
+start = "python manage.py runserver"
+mm = "python manage.py makemigrations"
+migrate = "python manage.py migrate"

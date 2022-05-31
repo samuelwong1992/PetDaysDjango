@@ -73,3 +73,7 @@ media_root/
 
 # SSH folder
 ssh/
+
+# Local Files
+.vscode
+*.sqlite3
