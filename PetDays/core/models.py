@@ -27,7 +27,7 @@ class Employee(models.Model):
 
 class Pet(models.Model):
 	name = models.CharField(max_length=255)
-	parents = models.ManyToManyField(Profile)
+	parent = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='pets')
 	daycares = models.ManyToManyField(Daycare)
 	profile_picture = models.ImageField(upload_to=images_filename_generator)
 

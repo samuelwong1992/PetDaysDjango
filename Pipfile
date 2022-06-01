@@ -6,8 +6,8 @@ name = "pypi"
 [packages]
 django = "==3.2.4"
 djangorestframework = "==3.12.4"
-django-allauth = "==0.44.0"
 pillow = "*"
+django-allauth = "*"
 
 [dev-packages]
 
