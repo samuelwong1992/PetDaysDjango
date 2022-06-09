@@ -67,4 +67,10 @@ class RegisterViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
 		profile = Profile.objects.get(user=user)
 		profileSerializer = ProfileSerializer(
 			profile, many=False, context={'request': request})
-		return Response({'profile': profileSerializer.data})
+
+		token, created = Token.objects.get_or_create(user=user)
+
+		return Response({
+			'token': token.key,
+			'profile': profileSerializer.data
+		})

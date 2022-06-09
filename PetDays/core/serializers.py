@@ -2,9 +2,17 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 
-from .models import Profile, Pet
+from .models import Profile, Pet, Daycare
+
+class DaycareNameSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Daycare
+		fields = ('id', 'name')
+
 
 class PetSerializer(serializers.ModelSerializer):
+	daycares = DaycareNameSerializer(many=True, read_only=True)
+	
 	class Meta:
 		model = Pet
 		fields = '__all__'
@@ -13,10 +21,16 @@ class ProfileSerializer(serializers.ModelSerializer):
 	first_name = serializers.CharField(read_only=True, source="user.first_name")
 	last_name = serializers.CharField(read_only=True, source="user.last_name")
 	pets = PetSerializer(many=True, read_only=True)
+	daycares = serializers.SerializerMethodField()
+
+	@staticmethod
+	def get_daycares(obj):
+		daycares = obj.get_daycares()
+		return DaycareNameSerializer(daycares, many=True).data
 
 	class Meta:
 		model = Profile
-		fields = ('id', 'first_name', 'last_name', 'profile_picture', 'pets')
+		fields = ('id', 'first_name', 'last_name', 'profile_picture', 'pets', 'daycares')
 
 
 ##################################

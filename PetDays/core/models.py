@@ -9,6 +9,10 @@ class Profile(models.Model):
 	def __str__(self):
 		return self.user.first_name + " " + self.user.last_name
 
+	def get_daycares(self):
+		return Daycare.objects.filter(pets__parent=self).distinct()
+
+
 class Daycare(models.Model):
 	name = models.CharField(max_length=255, blank=True)
 	
@@ -28,8 +32,8 @@ class Employee(models.Model):
 class Pet(models.Model):
 	name = models.CharField(max_length=255)
 	parent = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='pets')
-	daycares = models.ManyToManyField(Daycare)
-	profile_picture = models.ImageField(upload_to=images_filename_generator)
+	daycares = models.ManyToManyField(Daycare, related_name='pets')
+	profile_picture = models.ImageField(blank=True, upload_to=images_filename_generator)
 
 	def __str__(self):
 		return self.name
