@@ -25,7 +25,11 @@ class LoginViewSet(ObtainAuthToken):
 			profile = Profile.objects.get(user=request.user)
 			profileSerializer = ProfileSerializer(
 				profile, many=False, context={'request': request})
-			return Response({'profile': profileSerializer.data})
+			token, created = Token.objects.get_or_create(user=request.user)
+			return Response({
+				'token': token.key,
+				'profile': profileSerializer.data
+			})
 
 		serializer = self.serializer_class(data=request.data,
 											context={'request': request})

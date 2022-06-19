@@ -4,7 +4,7 @@ from .image_helpers import images_filename_generator
 
 class Profile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
-	profile_picture = models.ImageField(upload_to=images_filename_generator)
+	profile_picture = models.ImageField(blank=True, upload_to=images_filename_generator)
 
 	def __str__(self):
 		return self.user.first_name + " " + self.user.last_name
