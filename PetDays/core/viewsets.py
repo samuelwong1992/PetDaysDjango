@@ -2,12 +2,13 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import AllowAny
+from rest_framework.decorators import action
 
-from .models import Profile, Pet
-from .serializers import ProfileSerializer, RegisterSerializer, PetSerializer, PetRequestSerializer
-
+from .models import PetDaycareRelationship, Profile, Pet
+from .serializers import DaycareNameSerializer, ProfileSerializer, RegisterSerializer, PetSerializer, PetRequestSerializer, PetDaycareSerializer
+from .permissions import IsParent
 
 class LoginViewSet(ObtainAuthToken):
 	"""
@@ -84,8 +85,32 @@ class PetViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
 	serializer_class = PetSerializer
 	serializer_classes = {
 		'create': PetRequestSerializer,
+		'request_daycare': PetDaycareSerializer,
 	}
 
 	def get_serializer_class(self):
 		return self.serializer_classes.get(self.action,
 			super().get_serializer_class())
+
+	@action(detail=True,
+			methods=['post'],
+			url_path='request-daycare',
+			permission_classes=[IsParent])
+	# @ppsr_list.mapping.patch
+	def request_daycare(self, request, *args, **kwargs):
+		pet = self.get_object()
+		# Get serializer class
+		serializer = self.get_serializer_class()
+		# Set data
+		serializer = serializer(
+			data=request.data,
+			context={'request': request},
+		)
+		# Validate data
+		serializer.is_valid(raise_exception=True)
+		# Save data
+		pdr = serializer.save(pet=pet)
+
+		response_serializer = DaycareNameSerializer(pdr.daycare, context={'request': request})
+		# Return response
+		return Response(response_serializer.data, status=status.HTTP_201_CREATED)

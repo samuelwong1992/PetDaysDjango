@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 
-from .models import Profile, Pet, Daycare
+from .models import Profile, Pet, Daycare, PetDaycareRelationship
 
 ##################################
 #########              ###########
@@ -42,6 +42,20 @@ class PetRequestSerializer(PetSerializer):
 			'parent': {
 				'read_only': True,
 			}
+		}
+
+##################################
+#########              ###########
+#########  PetDaycare  ###########
+######### Relationship ###########
+########               ###########
+##################################
+class PetDaycareSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = PetDaycareRelationship
+		fields = '__all__'
+		extra_kwargs = {
+			'pet': {'read_only' : True},
 		}
 
 ##################################
