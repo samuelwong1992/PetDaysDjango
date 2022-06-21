@@ -5,8 +5,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import AllowAny
 
-from .models import Profile
-from .serializers import ProfileSerializer, RegisterSerializer
+from .models import Profile, Pet
+from .serializers import ProfileSerializer, RegisterSerializer, PetSerializer, PetRequestSerializer
 
 
 class LoginViewSet(ObtainAuthToken):
@@ -78,3 +78,14 @@ class RegisterViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
 			'token': token.key,
 			'profile': profileSerializer.data
 		})
+
+class PetViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
+	queryset = Pet.objects.all()
+	serializer_class = PetSerializer
+	serializer_classes = {
+		'create': PetRequestSerializer,
+	}
+
+	def get_serializer_class(self):
+		return self.serializer_classes.get(self.action,
+			super().get_serializer_class())

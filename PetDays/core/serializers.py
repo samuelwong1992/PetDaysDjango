@@ -4,12 +4,22 @@ from django.contrib.auth.password_validation import validate_password
 
 from .models import Profile, Pet, Daycare
 
+##################################
+#########              ###########
+#########   Daycare    ###########
+#########              ###########
+##################################
 class DaycareNameSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Daycare
 		fields = ('id', 'name')
 
 
+##################################
+#########              ###########
+#########     Pet      ###########
+#########              ###########
+##################################
 class PetSerializer(serializers.ModelSerializer):
 	daycares = DaycareNameSerializer(many=True, read_only=True)
 	
@@ -17,6 +27,28 @@ class PetSerializer(serializers.ModelSerializer):
 		model = Pet
 		fields = '__all__'
 
+class PetRequestSerializer(PetSerializer):
+	def to_internal_value(self, data):
+		request = self.context.get('request', None)
+		profile = Profile.objects.get(user=request.user)
+		value = super().to_internal_value(data)
+		value['parent'] = profile
+		return value
+
+	class Meta:
+		model = Pet
+		fields = '__all__'
+		extra_kwargs = {
+			'parent': {
+				'read_only': True,
+			}
+		}
+
+##################################
+#########              ###########
+#########    Profile   ###########
+#########              ###########
+##################################
 class ProfileSerializer(serializers.ModelSerializer):
 	first_name = serializers.CharField(read_only=True, source="user.first_name")
 	last_name = serializers.CharField(read_only=True, source="user.last_name")
