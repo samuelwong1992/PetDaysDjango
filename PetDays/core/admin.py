@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Profile, Daycare, Employee, Pet, Post, PostPhoto
+from .models import Profile, Daycare, Employee, Pet, Post, PostPhoto, Pet, PetDaycareRelationship
 
 # Register your models here.
 @admin.register(Profile)
@@ -24,4 +24,8 @@ class PostAdmin(admin.ModelAdmin):
 
 @admin.register(PostPhoto)
 class PostPhotoAdmin(admin.ModelAdmin):
+	list_display = ('__str__', )
+
+@admin.register(PetDaycareRelationship)
+class PetDaycareRelationshipAdmin(admin.ModelAdmin):
 	list_display = ('__str__', )
