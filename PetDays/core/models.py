@@ -17,6 +17,7 @@ class Profile(models.Model):
 
 class Daycare(models.Model):
 	name = models.CharField(max_length=255, blank=True)
+	address = models.CharField(max_length=512, blank=True)
 	
 	def __str__(self):
 		return self.name

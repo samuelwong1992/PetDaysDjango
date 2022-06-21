@@ -2,12 +2,16 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
-from rest_framework import viewsets, mixins, status
+from rest_framework import viewsets, mixins, status, filters
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action
+from django.db.models import Q
 
-from .models import PetDaycareRelationship, Profile, Pet
-from .serializers import DaycareNameSerializer, ProfileSerializer, RegisterSerializer, PetSerializer, PetRequestSerializer, PetDaycareSerializer
+import django_filters
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet
+
+from .models import PetDaycareRelationship, Profile, Pet, Daycare
+from .serializers import DaycareNameSerializer, ProfileSerializer, RegisterSerializer, PetSerializer, PetRequestSerializer, PetDaycareSerializer, DaycareSerializer
 from .permissions import IsParent
 
 class LoginViewSet(ObtainAuthToken):
@@ -114,3 +118,23 @@ class PetViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
 		response_serializer = DaycareNameSerializer(pdr.daycare, context={'request': request})
 		# Return response
 		return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+class DaycareFilter(django_filters.FilterSet):
+	desc = django_filters.CharFilter(
+		method='filter_desc')
+
+	def filter_desc(self, queryset, value, *args, **kwargs):
+		if args:
+			if len(args) > 0:
+				val = args[0]
+				queryset = queryset.filter(Q(name__icontains=val) | Q(address__icontains=val))
+			return queryset
+
+class DaycareViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+	queryset = Daycare.objects.all()
+	serializer_class = DaycareSerializer
+	filter_backends = [
+		DjangoFilterBackend,
+		filters.SearchFilter,
+	]
+	filter_class = DaycareFilter

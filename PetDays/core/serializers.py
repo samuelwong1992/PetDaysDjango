@@ -14,6 +14,11 @@ class DaycareNameSerializer(serializers.ModelSerializer):
 		model = Daycare
 		fields = ('id', 'name')
 
+class DaycareSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Daycare
+		fields = '__all__'
+
 
 ##################################
 #########              ###########
