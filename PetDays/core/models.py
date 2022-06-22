@@ -27,7 +27,7 @@ class Employee(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	daycare = models.ForeignKey(Daycare, on_delete=models.CASCADE)
 	is_active = models.BooleanField(default=True)
-	profile_picture = models.ImageField(upload_to=images_filename_generator)
+	profile_picture = models.ImageField(blank=True, upload_to=images_filename_generator)
 
 	def __str__(self):
 		return self.user.first_name + " " + self.user.last_name
@@ -49,18 +49,16 @@ class PetDaycareRelationship(models.Model):
 		return str(self.pet) + " / " + str(self.daycare)
 
 class Post(models.Model):
-	daycare = models.ForeignKey(Daycare, on_delete=models.CASCADE)
 	employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-	pets = models.ManyToManyField(Pet)
+	pets = models.ManyToManyField(Pet, blank=True)
 	date_time_created = models.DateTimeField(auto_now_add=True)
 	text = models.TextField()
 
 	def __str__(self):
-		return str(self.daycare)
+		return str(self.employee) + " / " + self.text
 
 class PostPhoto(models.Model):
-	post = models.ForeignKey(Post, on_delete=models.CASCADE)
-	is_vin = models.BooleanField(default=False)
+	post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="post_photos")
 	photo = models.ImageField(upload_to=images_filename_generator)
 
 	def __str__(self):

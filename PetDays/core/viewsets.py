@@ -1,3 +1,4 @@
+import profile
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from django.contrib.auth.models import User
@@ -10,8 +11,8 @@ from django.db.models import Q
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 
-from .models import PetDaycareRelationship, Profile, Pet, Daycare
-from .serializers import DaycareNameSerializer, ProfileSerializer, RegisterSerializer, PetSerializer, PetRequestSerializer, PetDaycareSerializer, DaycareSerializer
+from .models import PetDaycareRelationship, Profile, Pet, Daycare, Post
+from .serializers import DaycareNameSerializer, ProfileSerializer, RegisterSerializer, PetSerializer, PetRequestSerializer, PetDaycareSerializer, DaycareSerializer, PostSerializer
 from .permissions import IsParent
 
 class LoginViewSet(ObtainAuthToken):
@@ -138,3 +139,16 @@ class DaycareViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
 		filters.SearchFilter,
 	]
 	filter_class = DaycareFilter
+
+class PostsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin): 
+	queryset = Post.objects.all()
+	serializer_class = PostSerializer
+
+	def filter_queryset(self, queryset):
+		queryset = super().filter_queryset(queryset)
+		try: 
+			profile = Profile.objects.get(user=self.request.user)
+			queryset = queryset.filter(Q(employee__daycare__in=profile.get_daycares(), pets=None) | Q(pets__parent=profile)).distinct()
+			return queryset
+		except :
+			pass

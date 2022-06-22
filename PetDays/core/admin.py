@@ -16,7 +16,7 @@ class EmployeeAdmin(admin.ModelAdmin):
 
 @admin.register(Pet)
 class PetAdmin(admin.ModelAdmin):
-	list_display = ('__str__', )
+	list_display = ('__str__', 'parent', )
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):

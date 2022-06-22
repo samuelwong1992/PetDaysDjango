@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 
-from .models import Profile, Pet, Daycare, PetDaycareRelationship
+from .models import Employee, Post, PostPhoto, Profile, Pet, Daycare, PetDaycareRelationship
 
 ##################################
 #########              ###########
@@ -122,3 +122,36 @@ class RegisterSerializer(serializers.ModelSerializer) :
 		profile.save()
 
 		return user
+
+##################################
+#########              ###########
+#########   Employee   ###########
+#########              ###########
+##################################
+class EmployeeSerializer(serializers.ModelSerializer):
+	daycare = DaycareNameSerializer(many=False, read_only=True)
+	first_name = serializers.CharField(read_only=True, source="user.first_name")
+	last_name = serializers.CharField(read_only=True, source="user.last_name")
+	
+	class Meta:
+		model = Employee
+		fields = ('id', 'first_name', 'last_name', 'daycare', 'profile_picture')
+
+##################################
+#########              ###########
+#########     Post     ###########
+#########              ###########
+##################################
+class PostPhotoSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = PostPhoto
+		exclude = ('post', )
+
+class PostSerializer(serializers.ModelSerializer):
+	daycare = DaycareNameSerializer(many=False, read_only=True)
+	employee = EmployeeSerializer(many=False, read_only=True)
+	post_photos = PostPhotoSerializer(many=True, read_only=True)
+	
+	class Meta:
+		model = Post
+		exclude = ('pets', )
