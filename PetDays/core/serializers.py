@@ -14,6 +14,11 @@ class DaycareNameSerializer(serializers.ModelSerializer):
 		model = Daycare
 		fields = ('id', 'name')
 
+class DaycareNameAndProfilePictureSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Daycare
+		fields = ('id', 'name', 'profile_picture')
+
 class DaycareSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Daycare
@@ -129,7 +134,7 @@ class RegisterSerializer(serializers.ModelSerializer) :
 #########              ###########
 ##################################
 class EmployeeSerializer(serializers.ModelSerializer):
-	daycare = DaycareNameSerializer(many=False, read_only=True)
+	daycare = DaycareNameAndProfilePictureSerializer(many=False, read_only=True)
 	first_name = serializers.CharField(read_only=True, source="user.first_name")
 	last_name = serializers.CharField(read_only=True, source="user.last_name")
 	
@@ -148,7 +153,6 @@ class PostPhotoSerializer(serializers.ModelSerializer):
 		exclude = ('post', )
 
 class PostSerializer(serializers.ModelSerializer):
-	daycare = DaycareNameSerializer(many=False, read_only=True)
 	employee = EmployeeSerializer(many=False, read_only=True)
 	post_photos = PostPhotoSerializer(many=True, read_only=True)
 	

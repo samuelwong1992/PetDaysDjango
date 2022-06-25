@@ -11,7 +11,7 @@ def images_filename_generator(instance, filename):
 
 	today = datetime.today()
 
-	return '{year}/{week}/{name}{ext}'.format(
+	return 'media/{year}/{week}/{name}{ext}'.format(
 		year=today.year,
 		week=today.isocalendar()[1],
 		name=today.strftime('%m%d%H%M%S%f'),
