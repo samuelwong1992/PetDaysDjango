@@ -68,8 +68,8 @@ celery/*
 !celery/makefile
 
 # Static files
-static_root/
-media_root/
+static/
+media/
 
 # SSH folder
 ssh/
