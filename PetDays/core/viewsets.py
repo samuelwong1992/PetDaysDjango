@@ -140,9 +140,34 @@ class DaycareViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
 	]
 	filter_class = DaycareFilter
 
+class PostFilter(django_filters.FilterSet):
+	daycare = django_filters.CharFilter(
+		method='filter_daycare')
+	pet = django_filters.CharFilter(
+		method='filter_pet')
+
+	def filter_daycare(self, queryset, value, *args, **kwargs):
+		if args:
+			if len(args) > 0:
+				val = args[0]
+				queryset = queryset.filter(employee__daycare__id=val)
+			return queryset
+
+	def filter_pet(self, queryset, value, *args, **kwargs):
+		if args:
+			if len(args) > 0:
+				val = args[0]
+				queryset = queryset.filter(pets__id__contains=val)
+			return queryset
+
 class PostsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin): 
 	queryset = Post.objects.all()
 	serializer_class = PostSerializer
+	filter_backends = [
+		DjangoFilterBackend,
+		filters.SearchFilter,
+	]
+	filter_class = PostFilter
 
 	def filter_queryset(self, queryset):
 		queryset = super().filter_queryset(queryset)
